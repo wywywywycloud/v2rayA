@@ -16,6 +16,7 @@ import (
 	"github.com/v2rayA/v2rayA/common"
 	"github.com/v2rayA/v2rayA/common/httpClient"
 	"github.com/v2rayA/v2rayA/common/resolv"
+	"github.com/v2rayA/v2rayA/conf"
 	"github.com/v2rayA/v2rayA/core/serverObj"
 	"github.com/v2rayA/v2rayA/core/touch"
 	"github.com/v2rayA/v2rayA/core/v2ray/where"
@@ -152,11 +153,25 @@ func ResolveSubscriptionWithClient(source string, client *http.Client) (infos []
 		c.Timeout = 30 * time.Second
 	}
 
-	res, err := httpClient.HttpGetUsingSpecificClient(client, source)
+	req, err := http.NewRequest(http.MethodGet, source, nil)
+	if err != nil {
+		return nil, "", err
+	}
+	req.Header.Set("User-Agent", fmt.Sprintf("v2rayA/%v WebRequestHelper", conf.Version))
+	res, err := c.Do(req)
+	if err != nil {
+		// Retain the direct fallback without losing the download timeout.
+		direct := *http.DefaultClient
+		direct.Timeout = c.Timeout
+		res, err = direct.Do(req)
+	}
 	if err != nil {
 		return
 	}
 	defer res.Body.Close()
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, "", fmt.Errorf("subscription returned HTTP %d", res.StatusCode)
+	}
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, "", err
@@ -202,6 +217,9 @@ func getDataUsageStatus(bytesUsed, bytesRemaining uint64) (status string) {
 
 func UpdateSubscription(index int, disconnectIfNecessary bool) (err error) {
 	subscriptions := configure.GetSubscriptions()
+	if index < 0 || index >= len(subscriptions) {
+		return fmt.Errorf("subscription index out of range")
+	}
 	addr := subscriptions[index].Address
 	c := httpClient.GetHttpClientAutomatically()
 	resolv.CheckResolvConf()
@@ -210,6 +228,18 @@ func UpdateSubscription(index int, disconnectIfNecessary bool) (err error) {
 		reason := "failed to resolve subscription address: " + err.Error()
 		log.Warn("UpdateSubscription: %v: %v", err, subscriptionInfos)
 		return fmt.Errorf("UpdateSubscription: %v", reason)
+	}
+	if len(subscriptionInfos) == 0 {
+		return fmt.Errorf("subscription contains no usable servers; previous configuration kept")
+	}
+	if subscriptions[index].AutoSelect {
+		variant, _, e := where.GetV2rayServiceVersion()
+		if e != nil {
+			return e
+		}
+		if variant == where.Xray && subscriptionOwnsProxy(index) {
+			return updateSubscriptionWithProbe(index, &subscriptions[index], subscriptionInfos, status, probeSubscription)
+		}
 	}
 	infoServerRaws := make([]configure.ServerRaw, len(subscriptionInfos))
 	css := configure.GetConnectedServers()
@@ -286,6 +316,20 @@ func SelectServersFromSubscription(index int, shouldDisconnect bool) (err error)
 	variant, _, err := where.GetV2rayServiceVersion()
 	if err != nil {
 		log.Warn("Could not figure out if the server is running xray or v2ray -- err: %v", err)
+	}
+	if variant == where.Xray {
+		if shouldDisconnect || !subscriptionOwnsProxy(index) {
+			return nil
+		}
+		sub := configure.GetSubscription(index)
+		if sub == nil {
+			return fmt.Errorf("subscription index out of range")
+		}
+		servers := make([]serverObj.ServerObj, len(sub.Servers))
+		for i := range sub.Servers {
+			servers[i] = sub.Servers[i].ServerObj
+		}
+		return updateSubscriptionWithProbe(index, sub, servers, sub.Info, probeSubscription)
 	}
 
 	for i := 1; i < configure.GetLenSubscriptionServers(index)+1; i++ {
