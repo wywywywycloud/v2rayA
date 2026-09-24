@@ -2,6 +2,8 @@
 
 This branch targets v2rayA 2.2.7.3 with Xray 25.1.30, the versions in the official OpenWrt 24.10.4 package feed. `luci-app-v2raya` opens and controls this service; the selection logic belongs to v2rayA itself.
 
+This compatibility branch omits the old tag's GitHub Actions workflows, including upstream release and cross-repository dispatch jobs. Builds and validation use the reproducible local commands below; this branch does not publish upstream releases or claim hosted CI results.
+
 ## Behavior
 
 Enable **Auto Select** in the subscription's **Modify** dialog. Set automatic subscription updates and their interval in **Setting**. Both the subscription's **Update** button and the scheduled update use the same selection code.
