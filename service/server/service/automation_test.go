@@ -316,7 +316,10 @@ func TestAutomaticGroupApplyFailureUsesBackoff(t *testing.T) {
 		probes++
 		return make([]subscriptionProbeResult, len(nodes))
 	}
-	a.applyGroup = func(string, []configure.NodeRef) error { return errors.New("injected apply failure") }
+	a.applyGroup = func(string, []configure.NodeRef) error {
+		now = now.Add(5 * time.Minute)
+		return errors.New("injected slow apply failure")
+	}
 	a.step(context.Background())
 	now = now.Add(29 * time.Second)
 	a.step(context.Background())
@@ -427,5 +430,28 @@ func TestSwitchingToOnStartUpdatesOnceImmediately(t *testing.T) {
 	a.step(context.Background())
 	if *requests != 2 || !a.nextDeadline().IsZero() {
 		t.Fatalf("on-start after policy edit: requests=%d, next=%v", *requests, a.nextDeadline())
+	}
+}
+
+func TestAutomaticGroupSlowProbeFailureUsesCompletionTime(t *testing.T) {
+	for _, cancelled := range []bool{false, true} {
+		a := newAutomation()
+		now := time.Unix(5000, 0)
+		a.now = func() time.Time { return now }
+		ctx, cancel := context.WithCancel(context.Background())
+		setting := configure.DefaultOutboundSetting()
+		setting.AutoAdd, setting.ProbeInterval = true, "300s"
+		a.processAutomaticGroup(ctx, "proxy", setting, nil, func([]serverObj.ServerObj, string) ([]subscriptionProbeResult, error) {
+			now = now.Add(10 * time.Minute)
+			if cancelled {
+				cancel()
+				return nil, ctx.Err()
+			}
+			return nil, errors.New("probe failed")
+		})
+		cancel()
+		if got := a.groups["proxy"].next.Sub(now); got != 300*time.Second {
+			t.Fatalf("cancelled=%v: backoff after failure=%s, want 300s", cancelled, got)
+		}
 	}
 }

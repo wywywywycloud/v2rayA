@@ -366,7 +366,6 @@ func (a *automation) processAutomaticGroup(ctx context.Context, name string, set
 	}
 	backoff := max(interval, 30*time.Second)
 	state.signature = signature
-	state.next = now.Add(backoff)
 
 	nodes := make([]serverObj.ServerObj, len(candidates))
 	for i := range candidates {
@@ -401,6 +400,7 @@ func (a *automation) processAutomaticGroup(ctx context.Context, name string, set
 		ConfigurationMu.Unlock()
 	}
 	if err != nil {
+		state.next = a.now().Add(backoff)
 		if ctx.Err() == nil {
 			log.Warn("[Groups] %s: automatic membership failed: %v", name, err)
 		}
