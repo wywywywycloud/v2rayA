@@ -1,0 +1,26 @@
+[
+  {
+    "test": "group refresh retains all members and routes through fastest working VLESS server",
+    "result": "PASS"
+  },
+  {
+    "test": "group falls back to later healthy member when fastest server disappears",
+    "result": "PASS"
+  },
+  {
+    "test": "all-dead group preserves its membership",
+    "result": "PASS"
+  },
+  {
+    "test": "group resumes actual traffic after a server returns",
+    "result": "PASS"
+  },
+  {
+    "test": "group membership and traffic survive service restart",
+    "result": "PASS"
+  },
+  {
+    "test": "current defaults pass router-originated TPROXY traffic",
+    "result": "PASS"
+  }
+]

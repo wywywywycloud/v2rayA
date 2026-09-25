@@ -1,0 +1,17 @@
+Distribution: v2rayA Levin, OpenWrt 24.10.4 / aarch64_cortex-a53
+Service/core runtime version: 2.5.7-recovery.2
+Service/core package version: 2.5.7-recovery.2-r7.levin2
+LuCI package version: 26.268.0-r7.levin2
+Application source: b3c6789330daf3c25f4aaa5464ad2385a7e3c35a
+Application upstream base: bdbc305e97dd780478d93c4ed5ced8a4e3c898a8
+Packaging source: 21396d9 (release/levin-openwrt-24.10)
+Application fork: https://github.com/wywywywycloud/v2rayA-current
+Packaging fork: https://github.com/wywywywycloud/v2raya-openwrt-current
+Feed branch: https://github.com/wywywywycloud/v2rayA-current/tree/openwrt-feed
+Signing public key fingerprint: 9f02e659f24749fa
+
+Service/core binaries are unchanged from the previously validated recovery.2
+build. The Levin packaging branch changes package identity, dependency names,
+replacement metadata, LuCI labels, package-index termination and lifecycle
+scripts. It uses static Linux ARM64 binaries; no full OpenWrt SDK build is
+claimed for this standalone packaging pipeline.
