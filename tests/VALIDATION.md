@@ -8,6 +8,34 @@ The official v2rayA 2.2.7.3-r1 package reproduced the reported defect: automatic
 
 The final fork passed the complete OpenWrt VM suite with **256 MiB RAM**, including multiple consecutive failures while all six subscription entries stayed present. Every successful switch was checked against both the saved server identity and real traffic through a VLESS server. The earlier refresh-only build also ran these functional scenarios with 512 MiB RAM. Native application tests, real scheduler tests and targeted race checks passed.
 
+## Server selection policy and additional edge cases
+
+The `2.2.7.3-r4.failover3` build adds a per-subscription **Server Selection** switch in **Subscription → Modify**. On selects a working server; off follows the first position even when it is unavailable. The active subscription's policy applies on refresh independently of monitoring and initial Auto-Connect.
+
+All fifteen additional OpenWrt records passed using real Xray/VLESS traffic and production outage timers. The final cleanup snapshot had 112,636 KiB available memory; this is not a peak-memory benchmark.
+
+| Case | Expected and verified behavior |
+| --- | --- |
+| First entry dead, later entries healthy | First remains selected; manual fallback is rejected |
+| Monitoring enabled in first-entry mode | Refreshes continue without selecting a later entry |
+| Different dead first entry arrives during recovery | Its position is adopted; recovery does not reset to another minute |
+| Working first entry slower than a later entry | First wins; TPROXY traffic confirms the selected identity |
+| Empty update in first-entry mode | Existing subscription and connection remain intact |
+| Subscription reordered | Selection follows the new first position |
+| All entries dead when changing to working-server mode | Policy still saves; recovery finds a node after it returns |
+| Change from first to working-server mode | A reachable later node replaces the unavailable first entry |
+| Monitoring and Auto-Connect both disabled | The active subscription's selection policy still applies on refresh |
+| Subscription host returns HTTP 503 | Recovery uses saved candidates and restores real traffic |
+| Public HTTP/SOCKS proxy listeners disabled | Monitoring continues through its private listener |
+| Local Xray killed unexpectedly | Monitoring restarts it and restores transparent traffic |
+| Policy changed after a manual stop | Main core stays stopped in both modes |
+| OpenWrt service restarted | Selection policy and monitoring setting persist |
+| Cleanup | One main Xray remains, with no temporary probe configurations |
+
+Browser testing confirmed the switch's location, saved values in both directions, selection of the first entry, and empty latency fields for entries that were deliberately not checked. Such entries are no longer falsely labelled unavailable. Targeted race tests cover incomplete probe results, stale metadata snapshots and the first-entry policy. The native regression suite passed its nine scenarios.
+
+These checks exposed three refinements: retain the recovery state when a dead first entry changes; allow policy changes during a complete outage; distinguish untested entries from failed checks. The original ten monitoring scenarios below describe the preceding `r3.failover2` build; their evidence remains separately labelled in the archive.
+
 ## Environment
 
 | Component | Version or configuration |
@@ -17,7 +45,7 @@ The final fork passed the complete OpenWrt VM suite with **256 MiB RAM**, includ
 | VM board | QEMU `virt`, `armsr/armv8`, two vCPUs |
 | Final full-suite memory | 256 MiB, no swap |
 | Official baseline package | v2raya 2.2.7.3-r1 |
-| Candidate package | v2raya 2.2.7.3-r3.failover2 |
+| Candidate package | v2raya 2.2.7.3-r4.failover3 |
 | Guest Xray | Official OpenWrt xray-core 25.1.30-r1 |
 | Host Xray fixtures | Xray 25.1.30, macOS ARM64 |
 | LuCI package installed | luci-app-v2raya 26.259.57575~0aa55c7 |
@@ -43,7 +71,7 @@ The six-entry subscription contained a dead first endpoint, wrong VLESS credenti
 | OpenWrt service restart | Startup refresh selected recovered `fast`; HTTP proxy and TPROXY traffic both returned `fast` |
 | Cleanup | No temporary probe configuration files; exactly one managed Xray remained |
 
-The full 256 MiB run produced 12 passing records including environment and cleanup checks. During the sampled two-probe interval, `MemAvailable` was 96,288 KiB (about 94 MiB). After completion it was 97,972 KiB. These are snapshots, not a measured peak or a long-duration memory benchmark. Kernel logs contained no out-of-memory kills during the run. Xray's large virtual address-space value in `ps` is not its resident memory usage.
+The full 256 MiB run produced 12 passing records including environment and cleanup checks. During the sampled two-probe interval, `MemAvailable` was 105,556 KiB (about 103 MiB). After completion it was 114,652 KiB. These are snapshots, not a measured peak or a long-duration memory benchmark. Kernel logs contained no out-of-memory kills during the run. Xray's large virtual address-space value in `ps` is not its resident memory usage.
 
 ## Optional monitoring validation
 
@@ -87,7 +115,7 @@ The whole-repository test and vet commands are **not green on the pristine upstr
 
 ## Scope and limits
 
-Auto Select checks candidates at subscription refresh. Optional monitoring checks the active tunnel between updates and starts recovery after one minute of failed observations. It is off by default. Recovery retries immediately once, then uses bounded delays; failed/empty downloads fall back to saved candidates. Preserved state is not a promise of working traffic. The cached-download fallback and prolonged provider outage were not separate end-to-end scenarios in this run.
+Working-server mode checks candidates at subscription refresh. Optional monitoring checks the active tunnel between updates and starts recovery after one minute of failed observations. It is off by default. Recovery retries immediately once, then uses bounded delays; failed/empty downloads fall back to saved candidates. Preserved state is not a promise of working traffic. The additional policy suite verifies the cached fallback after an HTTP 503; prolonged provider outages and long-running operation remain outside the recorded run.
 
 The VM validates the same OpenWrt release and application binary on a generic ARM64 board. It does not validate the Cudy TR3000's SoC, Wi-Fi, flash layout, physical LAN forwarding, real provider credentials, TLS/REALITY variants, external plugins or long-running production load. TPROXY was checked with traffic originating on the guest, not a separate LAN client. External-plugin nodes are excluded from isolated selection probes.
 

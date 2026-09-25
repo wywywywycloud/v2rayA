@@ -158,7 +158,7 @@ def main():
 
     try:
         installed = ssh("opkg status v2raya")
-        expected_version = "Version: 2.2.7.3-r1" if args.expect_baseline else "Version: 2.2.7.3-r3.failover2"
+        expected_version = "Version: 2.2.7.3-r1" if args.expect_baseline else "Version: 2.2.7.3-r4.failover3"
         assert expected_version in installed, installed
         record("guest environment", environment=ssh(
             "cat /etc/openwrt_release; uname -a; opkg list-installed | "

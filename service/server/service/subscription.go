@@ -238,7 +238,7 @@ func UpdateSubscription(index int, disconnectIfNecessary bool) (err error) {
 	if len(subscriptionInfos) == 0 {
 		return fmt.Errorf("subscription contains no usable servers; previous configuration kept")
 	}
-	if subscriptions[index].AutoSelect || subscriptions[index].Monitor {
+	if subscriptionOwnsProxy(index) {
 		variant, _, e := where.GetV2rayServiceVersion()
 		if e != nil {
 			return e
@@ -317,6 +317,8 @@ func ModifySubscriptionRemark(subscription touch.Subscription) (err error) {
 		return fmt.Errorf("failed to find the corresponding subscription")
 	}
 	previous := *raw
+	policyChanged := raw.PreferFirst != subscription.PreferFirst
+	raw.PreferFirst = subscription.PreferFirst
 	raw.Remarks = subscription.Remarks
 	raw.Address = subscription.Address
 	raw.AutoSelect = subscription.AutoSelect
@@ -324,6 +326,30 @@ func ModifySubscriptionRemark(subscription touch.Subscription) (err error) {
 	raw.Monitor = subscription.Monitor
 	if err = configure.SetSubscription(subscription.ID-1, raw); err != nil {
 		return err
+	}
+	if policyChanged && subscriptionOwnsProxy(subscription.ID-1) && len(configure.GetConnectedServersByOutbound("proxy").Get()) > 0 {
+		servers := make([]serverObj.ServerObj, len(raw.Servers))
+		for i := range raw.Servers {
+			servers[i] = raw.Servers[i].ServerObj
+		}
+		if !subscriptionScanMu.TryLock() {
+			_ = configure.SetSubscription(subscription.ID-1, &previous)
+			return fmt.Errorf("another subscription scan is finishing; retry the setting change")
+		}
+		err = updateSubscriptionWithProbe(subscription.ID-1, raw, servers, raw.Info, probeSubscription)
+		subscriptionScanMu.Unlock()
+		if errors.Is(err, ErrNoReachableSubscriptionServer) {
+			// Saving policy must remain possible during a complete outage.
+			// Selection stays unchanged until a candidate actually succeeds.
+			if raw.Monitor {
+				requestSubscriptionRecovery()
+			}
+			err = nil
+		}
+		if err != nil {
+			_ = configure.SetSubscription(subscription.ID-1, &previous)
+			return err
+		}
 	}
 	if monitorChanged && subscriptionOwnsProxy(subscription.ID-1) && v2ray.ProcessManager.Running() {
 		if err = v2ray.UpdateV2RayConfig(); err != nil {

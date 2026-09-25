@@ -127,4 +127,17 @@ python3 tests/subscription_monitor_e2e.py --disposable-vm \
   --output /tmp/openwrt-monitor
 ```
 
-This test disables the ordinary update schedule and leaves Auto Select off. It checks the default-off monitoring setting, healthy traffic with one core and no subscription downloads, a transient outage, an actual sustained outage exceeding one minute, real VLESS and TPROXY recovery, immediate retries when all nodes fail, recovery after a node returns, cancellation during a blocked subscription download, switch-off behavior, manual stop and persistence across an OpenWrt service restart. The production timer is not shortened. Use a fresh test database for each invocation.
+This test disables the ordinary update schedule and leaves Auto-Connect off. It checks the default-off monitoring setting, healthy traffic with one core and no subscription downloads, a transient outage, an actual sustained outage exceeding one minute, real VLESS and TPROXY recovery, immediate retries when all nodes fail, recovery after a node returns, cancellation during a blocked subscription download, switch-off behavior, manual stop and persistence across an OpenWrt service restart. The production timer is not shortened. Use a fresh test database for each invocation.
+
+## Selection policy and additional failure cases
+
+With a fresh disposable database, run:
+
+```sh
+python3 tests/subscription_policy_e2e.py --disposable-vm \
+  --xray /absolute/path/to/host/xray \
+  --ssh-key /absolute/path/to/disposable/key \
+  --output /tmp/openwrt-policy
+```
+
+This exercises both GUI-equivalent selection modes, first-position changes, an unavailable replacement first entry during recovery, empty updates, saving policy during a full outage, refresh with monitoring/Auto-Connect disabled, a subscription HTTP 503 with cached candidates, disabled public proxy listeners, unexpected local Xray death, manual stop during policy changes, and restart persistence. Production failure windows are unchanged, so the suite takes several minutes. It validates actual VLESS and guest-originated TPROXY traffic.

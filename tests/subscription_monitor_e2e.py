@@ -91,7 +91,7 @@ def main():
         print('PASS:', name, evidence or '', flush=True)
 
     try:
-        assert api('version')['version']=='2.2.7.3-failover.2'
+        assert api('version')['version']=='2.2.7.3-failover.3'
         token = api('account', {'username':'monitortest','password':'disposable-monitor-only'})['token']
         api('ports', {'socks5':20170,'http':20171,'socks5WithPac':0,'httpWithPac':0,'vmess':0}, 'PUT')
         api('outbound', {'outbound':'proxy','setting':{'probeURL':'http://198.18.0.1/check','probeInterval':'10s','type':'leastping'}}, 'PUT')

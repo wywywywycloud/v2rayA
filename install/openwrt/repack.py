@@ -50,7 +50,7 @@ def main():
     if "Package: v2raya\n" not in text or "Architecture: aarch64_cortex-a53\n" not in text:
         raise ValueError("unexpected base package")
     updates = {
-        "Version": "2.2.7.3-r3.failover2",
+        "Version": "2.2.7.3-r4.failover3",
         "Source": "https://github.com/wywywywycloud/v2rayA/tree/fix/openwrt-subscription-failover",
         "Maintainer": "Mikhail Levin",
         "URL": "https://github.com/wywywywycloud/v2rayA",

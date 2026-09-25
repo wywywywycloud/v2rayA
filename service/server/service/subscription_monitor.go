@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -176,6 +177,14 @@ func (s *monitorState) step(ctx context.Context) time.Duration {
 	}
 	s.recovering = true
 	if err := recoverMonitoredSubscription(ctx, target); err != nil {
+		// A refreshed first entry can change identity while still being dead.
+		// Keep the recovery loop active across that change, without bypassing backoff.
+		if errors.Is(err, ErrNoReachableSubscriptionServer) && ConfigurationMu.TryLock() {
+			if current := activeMonitorTarget(); current != nil && current.index == target.index && current.subscription.PreferFirst {
+				s.key, s.template = current.key, current.template
+			}
+			ConfigurationMu.Unlock()
+		}
 		delay := s.retryDelay()
 		if ctx.Err() == nil {
 			log.Warn("[Monitor] Subscription %d: recovery attempt %d failed; retry in %s: %v", target.index+1, s.failures, delay, err)
@@ -227,7 +236,10 @@ func recoverMonitoredSubscription(parent context.Context, target *monitorTarget)
 		}
 		info = old.Info
 	}
-	results := probeSubscriptionWithContext(ctx, servers, target.probeURL)
+	probeCandidates := policyProbe(old.PreferFirst, func(nodes []serverObj.ServerObj, url string) []subscriptionProbeResult {
+		return probeSubscriptionWithContext(ctx, nodes, url)
+	})
+	results := probeCandidates(servers, target.probeURL)
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}

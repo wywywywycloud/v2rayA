@@ -39,7 +39,27 @@ func subscriptionOwnsProxy(index int) bool {
 }
 
 func updateSubscriptionWithProbe(index int, old *configure.SubscriptionRaw, servers []serverObj.ServerObj, info string, probe subscriptionProber) error {
-	return applySubscriptionSelection(index, old, servers, info, probe, false)
+	return applySubscriptionSelection(index, old, servers, info, policyProbe(old.PreferFirst, probe), false)
+}
+
+// First-entry mode probes only its allowed endpoint. Other entries are never
+// fallback candidates, even when monitoring is enabled.
+func policyProbe(first bool, probe subscriptionProber) subscriptionProber {
+	return func(servers []serverObj.ServerObj, url string) []subscriptionProbeResult {
+		if !first || len(servers) == 0 {
+			return probe(servers, url)
+		}
+		checked := probe(servers[:1], url)
+		if len(checked) != 1 {
+			return nil
+		}
+		results := make([]subscriptionProbeResult, len(servers))
+		for i := range results {
+			results[i].err = fmt.Errorf("not checked in first-entry mode")
+		}
+		results[0] = checked[0]
+		return results
+	}
 }
 
 func applySubscriptionSelection(index int, old *configure.SubscriptionRaw, servers []serverObj.ServerObj, info string, probe subscriptionProber, restart bool) error {
@@ -56,6 +76,9 @@ func applySubscriptionSelection(index int, old *configure.SubscriptionRaw, serve
 	next.Servers = make([]configure.ServerRaw, len(servers))
 	for i, result := range results {
 		next.Servers[i].ServerObj = servers[i]
+		if old.PreferFirst && i > 0 {
+			continue
+		}
 		if result.err != nil {
 			next.Servers[i].Latency = "UNAVAILABLE"
 			log.Debug("[AutoSelect] Subscription %d, server %d: %v", index+1, i+1, result.err)
@@ -65,6 +88,9 @@ func applySubscriptionSelection(index int, old *configure.SubscriptionRaw, serve
 		if best < 0 || result.latency < results[best].latency {
 			best = i
 		}
+	}
+	if old.PreferFirst && len(servers) > 0 {
+		best = 0
 	}
 	if best < 0 {
 		return fmt.Errorf("%w in subscription %d; previous configuration kept", ErrNoReachableSubscriptionServer, index+1)
@@ -117,6 +143,9 @@ func applySubscriptionSelection(index int, old *configure.SubscriptionRaw, serve
 			}
 			return errors.Join(fmt.Errorf("failed to apply selected server: %w", err), restoreErr)
 		}
+	}
+	if restart && old.PreferFirst && results[0].err != nil {
+		return fmt.Errorf("%w: first entry remains unavailable", ErrNoReachableSubscriptionServer)
 	}
 	log.Info("[AutoSelect] Subscription %d: selected server %d (%s), checked %d servers", index+1, best+1, next.Servers[best].Latency, len(servers))
 	return nil
