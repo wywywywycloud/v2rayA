@@ -1,5 +1,5 @@
 Package: v2raya-levin-core
-Version: 2.5.7-recovery.2-r7.levin1
+Version: 2.5.7-recovery.2-r7.levin2
 Architecture: aarch64_cortex-a53
 Provides: v2raya-core
 Conflicts: v2raya-core
@@ -12,12 +12,12 @@ Priority: optional
 Depends: libc
 Installed-Size: 35192994
 Description: Matching proxy core for v2rayA Levin
-Filename: v2raya-levin-core_2.5.7-recovery.2-r7.levin1_aarch64_cortex-a53.ipk
-Size: 12441890
-SHA256sum: 668c2424b676908d3b42f3303f9e83a993becc69cffa04f46d3ea2398f4982c0
+Filename: v2raya-levin-core_2.5.7-recovery.2-r7.levin2_aarch64_cortex-a53.ipk
+Size: 12441905
+SHA256sum: edb5ae01ff4a806b4e8eb4de97727c952c6cf37d937c9541ca03975e5d912211
 
 Package: v2raya-levin
-Version: 2.5.7-recovery.2-r7.levin1
+Version: 2.5.7-recovery.2-r7.levin2
 Architecture: aarch64_cortex-a53
 Provides: v2raya
 Conflicts: v2raya
@@ -27,15 +27,15 @@ Source: https://github.com/wywywywycloud/v2rayA-current/tree/release/levin-openw
 Maintainer: Mikhail Levin
 Section: net
 Priority: optional
-Depends: libc, ca-bundle, kmod-nft-tproxy, v2raya-levin-core (= 2.5.7-recovery.2-r7.levin1), v2ray-geoip, v2ray-geosite
+Depends: libc, ca-bundle, kmod-nft-tproxy, v2raya-levin-core (= 2.5.7-recovery.2-r7.levin2), v2ray-geoip, v2ray-geosite
 Installed-Size: 27593909
 Description: Levin fork of v2rayA: subscription recovery and first-server policy
-Filename: v2raya-levin_2.5.7-recovery.2-r7.levin1_aarch64_cortex-a53.ipk
-Size: 10123098
-SHA256sum: 5289b77763b0dddaaff88af6f911ab6883bbc3645e77bcb9f8b67a85b95cdc8b
+Filename: v2raya-levin_2.5.7-recovery.2-r7.levin2_aarch64_cortex-a53.ipk
+Size: 10123187
+SHA256sum: 837ba418664f7688f2726f7fc34cf860ec15aafa3b9e506d0f6b6ce0228651ff
 
 Package: luci-app-v2raya-levin
-Version: 26.268.0-r7.levin1
+Version: 26.268.0-r7.levin2
 Architecture: aarch64_cortex-a53
 Provides: luci-app-v2raya
 Conflicts: luci-app-v2raya
@@ -45,10 +45,10 @@ Source: https://github.com/wywywywycloud/v2raya-openwrt-current/tree/release/lev
 Maintainer: Mikhail Levin
 Section: net
 Priority: optional
-Depends: luci-light, v2raya-levin (= 2.5.7-recovery.2-r7.levin1)
+Depends: luci-light, v2raya-levin (= 2.5.7-recovery.2-r7.levin2)
 Installed-Size: 5499
 Description: v2rayA Levin - install this package for the complete fork with LuCI
-Filename: luci-app-v2raya-levin_26.268.0-r7.levin1_aarch64_cortex-a53.ipk
-Size: 3250
-SHA256sum: f688eb52b36cab2406d6399afb49e6df1646b1611eafd43e89f07654265d6a89
+Filename: luci-app-v2raya-levin_26.268.0-r7.levin2_aarch64_cortex-a53.ipk
+Size: 3251
+SHA256sum: 625b66b711d9926fc8517b28b7a09c6e8684191edaa177281742365e49b53d46
 
