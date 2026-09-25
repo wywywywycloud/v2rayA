@@ -31,6 +31,8 @@ fork packages. Every kernel module came from that release's official repository.
 
 The public setup script accepts exactly 24.10.0 through 24.10.8. It rejects
 other releases instead of bypassing package-manager, ABI or architecture checks.
+Older rows establish compatibility only; production routers should use the
+newest 24.10 security update available for their hardware.
 OpenWrt 25.12 was not tested or claimed: it uses apk/APK and needs a separate
 native distribution. End-of-life release series are not supported.
 
