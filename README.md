@@ -1,3 +1,10 @@
+# v2rayA Resilient
+
+For OpenWrt 24.10.4, use the [Resilient signed feed and GUI installation guide](openwrt-24.10/resilient/README.md).
+Install `luci-app-v2raya-resilient` in LuCI Software.
+
+---
+
 # Signed v2rayA fork packages for OpenWrt
 
 Binary opkg feed for OpenWrt 24.10.4 and `aarch64_cortex-a53` (Cudy TR3000). The `v2raya-fork` bundle installs the tested v2rayA fork with its embedded GUI, Xray 25.1.30-r1, geo assets, LuCI and `luci-app-v2raya`. Dependencies come from the router's official OpenWrt feeds.
