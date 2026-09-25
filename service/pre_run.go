@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/v2rayA/v2rayA/common"
 	"github.com/v2rayA/v2rayA/db"
 	"github.com/v2rayA/v2rayA/db/configure"
 	"github.com/v2rayA/v2rayA/kernel/ipforward"
@@ -48,6 +49,13 @@ func recoverPendingHostState() {
 func run() error {
 	recoverPendingHostState()
 	stopAutomation := func() {}
+	setting := configure.GetSettingNotNil()
+	if configure.MigrateOpenWrtBridgeExclusion(setting, common.IsOpenWrt()) {
+		if err := configure.SetSetting(setting); err != nil {
+			return fmt.Errorf("migrate OpenWrt TPROXY interface exclusions: %w", err)
+		}
+		log.Info("migrated the OpenWrt TPROXY exclusions to include LAN bridge traffic")
+	}
 	cleanup := func() {
 		stopAutomation()
 		fmt.Println("Quitting...")
