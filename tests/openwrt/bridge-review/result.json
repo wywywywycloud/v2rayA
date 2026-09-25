@@ -1,0 +1,49 @@
+{
+  "result": "PASS",
+  "board": {
+    "kernel": "6.6.119",
+    "hostname": "OpenWrt",
+    "system": "ARMv8 Processor rev 0",
+    "model": "linux,dummy-virt",
+    "board_name": "linux,dummy-virt",
+    "rootfs_type": "ext4",
+    "release": {
+      "distribution": "OpenWrt",
+      "version": "24.10.5",
+      "revision": "r29087-d9c5716d1d",
+      "target": "armsr/armv8",
+      "description": "OpenWrt 24.10.5 r29087-d9c5716d1d",
+      "builddate": "1766005702"
+    }
+  },
+  "version": {
+    "coreVersion": "2.5.7-pr-openwrt-bridge",
+    "coreVersionErr": "",
+    "coreVersionValid": true,
+    "docker": false,
+    "foundNew": false,
+    "hasAccounts": true,
+    "isRoot": true,
+    "lastKernelExit": "running",
+    "lite": 0,
+    "loadBalanceValid": true,
+    "os": "linux",
+    "remoteVersion": "2.2.7.1",
+    "serviceValid": true,
+    "tunSupported": true,
+    "v5": true,
+    "variant": "V2rayaCore",
+    "version": "2.5.7-pr-openwrt-bridge"
+  },
+  "client": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000\n    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\n    inet 127.0.0.1/8 scope host lo\n       valid_lft forever preferred_lft forever\n    inet6 ::1/128 scope host proto kernel_lo \n       valid_lft forever preferred_lft forever\n4: client-eth@if5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000\n    link/ether ea:5d:2e:30:a1:dc brd ff:ff:ff:ff:ff:ff link-netnsid 0\n    inet 192.0.2.2/24 scope global client-eth\n       valid_lft forever preferred_lft forever\n    inet6 fec0::e85d:2eff:fe30:a1dc/64 scope site tentative dynamic mngtmpaddr proto kernel_ra \n       valid_lft 86399sec preferred_lft 14399sec\n    inet6 fe80::e85d:2eff:fe30:a1dc/64 scope link proto kernel_ll \n       valid_lft forever preferred_lft forever\ndefault via 192.0.2.1 dev client-eth \n192.0.2.0/24 dev client-eth proto kernel scope link src 192.0.2.2 \n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel master br-lan state UP mode DEFAULT group default qlen 1000\n    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff\n5: lan-client@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-lan state UP mode DEFAULT group default qlen 1000\n    link/ether e2:3e:52:ea:71:fb brd ff:ff:ff:ff:ff:ff link-netns bridge-client\n",
+  "checks": [
+    "fresh OpenWrt default includes LAN bridges",
+    "independent LAN client reaches direct trap before TPROXY starts",
+    "forwarded LAN TCP hits br-lan, mark 0x40 and TPROXY to 127.0.0.1:52345; five requests use VLESS with no direct escapes",
+    "historical br-* exclusion reproduces a LAN direct escape",
+    "explicit custom br-lan exclusion remains effective",
+    "restoring OpenWrt default restores LAN interception"
+  ],
+  "direct_requests": 3,
+  "proxy_requests": 7
+}

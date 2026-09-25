@@ -1,0 +1,66 @@
+trace id a19d5334 ip bridge_review trace packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 ip bridge_review trace rule iifname "br-lan" ip saddr 192.0.2.2 ip daddr 198.18.0.1 tcp dport 80 counter packets 10 bytes 650 meta nftrace set 1 (verdict continue)
+trace id a19d5334 ip bridge_review trace verdict continue
+trace id a19d5334 ip bridge_review trace policy accept
+trace id a19d5334 inet v2raya prerouting packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip protocol tcp ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 inet v2raya prerouting rule meta nfproto { ipv4, ipv6 } jump tp_pre (verdict jump tp_pre)
+trace id a19d5334 inet v2raya tp_pre rule meta l4proto { tcp, udp } fib saddr type != local fib daddr type != local jump tp_rule (verdict jump tp_rule)
+trace id a19d5334 inet v2raya tp_rule rule meta mark set ct mark (verdict continue)
+trace id a19d5334 inet v2raya tp_rule rule jump tp_mark (verdict jump tp_mark)
+trace id a19d5334 inet v2raya tp_mark rule tcp flags & (fin | syn | rst | ack) == syn meta mark set meta mark | 0x00000040 (verdict continue)
+trace id a19d5334 inet v2raya tp_mark rule ct mark set meta mark (verdict continue)
+trace id a19d5334 inet v2raya tp_mark verdict continue meta mark 0x00000040
+trace id a19d5334 inet v2raya tp_rule verdict continue meta mark 0x00000040
+trace id a19d5334 inet v2raya tp_pre rule meta l4proto { tcp, udp } meta mark & 0x000000c0 == 0x00000040 tproxy ip to 127.0.0.1:52345 (verdict continue)
+trace id a19d5334 inet v2raya tp_pre verdict continue meta mark 0x00000040
+trace id a19d5334 inet v2raya prerouting verdict continue meta mark 0x00000040
+trace id a19d5334 inet v2raya prerouting policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_prerouting packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip protocol tcp ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 inet fw4 mangle_prerouting verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_prerouting policy accept meta mark 0x00000040
+trace id a19d5334 ip bridge_review escape packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 ip bridge_review escape verdict continue meta mark 0x00000040
+trace id a19d5334 ip bridge_review escape policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 dstnat packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip protocol tcp ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 inet fw4 dstnat verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 dstnat policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 prerouting packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip protocol tcp ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 inet fw4 prerouting rule iifname "br-lan" jump helper_lan comment "!fw4: Handle lan IPv4/IPv6 helper assignment" (verdict jump helper_lan)
+trace id a19d5334 inet fw4 helper_lan verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 prerouting verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 prerouting policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_input packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip protocol tcp ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 inet fw4 mangle_input verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_input policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 input packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33065 ip protocol tcp ip length 60 tcp sport 37420 tcp dport 80 tcp flags == syn tcp window 64240
+trace id a19d5334 inet fw4 input rule tcp flags & (fin | syn | rst | ack) == syn jump syn_flood comment "!fw4: Rate limit TCP syn packets" (verdict jump syn_flood)
+trace id a19d5334 inet fw4 syn_flood verdict return meta mark 0x00000040
+trace id a19d5334 inet fw4 input rule iifname "br-lan" jump input_lan comment "!fw4: Handle lan IPv4/IPv6 input traffic" (verdict jump input_lan)
+trace id a19d5334 inet fw4 input_lan rule jump accept_from_lan (verdict jump accept_from_lan)
+trace id a19d5334 inet fw4 accept_from_lan rule iifname "br-lan" counter packets 24 bytes 1072 accept comment "!fw4: accept lan IPv4/IPv6 traffic" (verdict accept)
+trace id a19d5334 ip bridge_review trace packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33067 ip length 133 tcp sport 37420 tcp dport 80 tcp flags == 0x18 tcp window 2008
+trace id a19d5334 ip bridge_review trace rule iifname "br-lan" ip saddr 192.0.2.2 ip daddr 198.18.0.1 tcp dport 80 counter packets 10 bytes 650 meta nftrace set 1 (verdict continue)
+trace id a19d5334 ip bridge_review trace verdict continue
+trace id a19d5334 ip bridge_review trace policy accept
+trace id a19d5334 inet v2raya prerouting packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33067 ip protocol tcp ip length 133 tcp sport 37420 tcp dport 80 tcp flags == 0x18 tcp window 2008
+trace id a19d5334 inet v2raya prerouting rule meta nfproto { ipv4, ipv6 } jump tp_pre (verdict jump tp_pre)
+trace id a19d5334 inet v2raya tp_pre rule meta l4proto { tcp, udp } fib saddr type != local fib daddr type != local jump tp_rule (verdict jump tp_rule)
+trace id a19d5334 inet v2raya tp_rule rule meta mark set ct mark (verdict continue)
+trace id a19d5334 inet v2raya tp_rule verdict return meta mark 0x00000040
+trace id a19d5334 inet v2raya tp_pre rule meta l4proto { tcp, udp } meta mark & 0x000000c0 == 0x00000040 tproxy ip to 127.0.0.1:52345 (verdict continue)
+trace id a19d5334 inet v2raya tp_pre verdict continue meta mark 0x00000040
+trace id a19d5334 inet v2raya prerouting verdict continue meta mark 0x00000040
+trace id a19d5334 inet v2raya prerouting policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_prerouting packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33067 ip protocol tcp ip length 133 tcp sport 37420 tcp dport 80 tcp flags == 0x18 tcp window 2008
+trace id a19d5334 inet fw4 mangle_prerouting verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_prerouting policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 prerouting packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33067 ip protocol tcp ip length 133 tcp sport 37420 tcp dport 80 tcp flags == 0x18 tcp window 2008
+trace id a19d5334 inet fw4 prerouting rule iifname "br-lan" jump helper_lan comment "!fw4: Handle lan IPv4/IPv6 helper assignment" (verdict jump helper_lan)
+trace id a19d5334 inet fw4 helper_lan verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 prerouting verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 prerouting policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_input packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33067 ip protocol tcp ip length 133 tcp sport 37420 tcp dport 80 tcp flags == 0x18 tcp window 2008
+trace id a19d5334 inet fw4 mangle_input verdict continue meta mark 0x00000040
+trace id a19d5334 inet fw4 mangle_input policy accept meta mark 0x00000040
+trace id a19d5334 inet fw4 input packet: iif "br-lan" ether saddr ea:5d:2e:30:a1:dc ether daddr 52:54:00:12:34:56 ip saddr 192.0.2.2 ip daddr 198.18.0.1 ip dscp cs0 ip ecn not-ect ip ttl 64 ip id 33067 ip protocol tcp ip length 133 tcp sport 37420 tcp dport 80 tcp flags == 0x18 tcp window 2008
+trace id a19d5334 inet fw4 input rule ct state vmap { established : accept, related : accept } comment "!fw4: Handle inbound flows" (verdict accept)
