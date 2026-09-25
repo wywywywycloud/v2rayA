@@ -4,7 +4,10 @@ set -eu
 umask 077
 [ "$(id -u)" = 0 ] || { echo 'Run as root on OpenWrt.' >&2; exit 1; }
 . /etc/openwrt_release
-[ "$DISTRIB_RELEASE" = '24.10.4' ] || { echo 'Validated for OpenWrt 24.10.4 only.' >&2; exit 1; }
+case "$DISTRIB_RELEASE" in
+    24.10.0|24.10.1|24.10.2|24.10.3|24.10.4|24.10.5|24.10.6|24.10.7|24.10.8) ;;
+    *) echo 'Validated for OpenWrt 24.10.0 through 24.10.8 only.' >&2; exit 1 ;;
+esac
 opkg print-architecture | awk '$2 == "aarch64_cortex-a53" {found=1} END {exit !found}' || {
     echo 'Requires aarch64_cortex-a53; do not override your router architecture.' >&2; exit 1;
 }

@@ -1,12 +1,38 @@
 # Resilient r10 validation
 
-Validated on 2026-09-25 in a disposable local OpenWrt 24.10.4 armsr/armv8
-VM, Linux 6.6.110, 256 MiB RAM. No production subscriptions were used.
+Validated on 2026-09-25 across all nine final OpenWrt 24.10 releases in
+disposable local armsr/armv8 VMs with 256 MiB RAM. No production subscriptions
+were used. Full functional suites ran on 24.10.4 and 24.10.5; every other
+release repeated the clean signed-feed, native kernel-module, service/core,
+embedded-GUI and LuCI checks.
 
 Application source: `a0bad190fc7aad17b916c03fbc849a376b7f188f`.
 Packaging source: `bd94f47861e3400e7a076a3fad2f7607ada366aa`.
 Service/core: `2.5.7-resilient.4-r10.resilient1`.
 LuCI: `26.268.0-r10.resilient1`.
+
+## OpenWrt 24.10 release matrix
+
+Each row used the official release root filesystem and kernel. The VM target is
+generic ARM64, so it uses a test-only `aarch64_cortex-a53` opkg alias for the
+fork packages. Every kernel module came from that release's official repository.
+
+| OpenWrt | Linux | Signed feed | Native tproxy kmod | Service/core | Embedded GUI | LuCI |
+| --- | --- | --- | --- | --- | --- | --- |
+| 24.10.0 | 6.6.73 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.1 | 6.6.86 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.2 | 6.6.93 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.3 | 6.6.104 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.4 | 6.6.110 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.5 | 6.6.119 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.6 | 6.6.127 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.7 | 6.6.141 | PASS | PASS | PASS | PASS | PASS |
+| 24.10.8 | 6.6.144 | PASS | PASS | PASS | PASS | PASS |
+
+The public setup script accepts exactly 24.10.0 through 24.10.8. It rejects
+other releases instead of bypassing package-manager, ABI or architecture checks.
+OpenWrt 25.12 was not tested or claimed: it uses apk/APK and needs a separate
+native distribution. End-of-life release series are not supported.
 
 ## Application checks
 
@@ -69,6 +95,12 @@ service and core, created a disabled UCI configuration, left the service stopped
 until enabled, and then started with `hasAccounts=false`, matching versions and
 `coreVersionValid=true`. The preserved test database and UCI file were restored
 after the clean-install check.
+
+The independent 24.10.5 clean VM also passed service restart and reboot,
+visual LuCI and embedded-GUI checks, all four subscription update modes, a
+200-node bounded-probe pass, automatic whole-catalog group failover, empty-group
+blocking without a direct leak, recovery after an injected core failure, and
+both legacy database migrations.
 
 The r9 source and feed remain available in the
 `release/resilient-openwrt-24.10-r9` and `openwrt-feed-r9` branches. The normal
