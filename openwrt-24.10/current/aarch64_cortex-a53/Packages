@@ -1,0 +1,44 @@
+Package: v2raya-core
+Version: 2.5.7-recovery.2-r6
+Architecture: aarch64_cortex-a53
+License: MPL-2.0
+Source: https://github.com/v2rayA/v2rayA
+Maintainer: v2rayA contributors
+Section: net
+Priority: optional
+Depends: libc
+Installed-Size: 35192994
+Description: Current v2rayA OpenWrt integration
+Filename: v2raya-core_2.5.7-recovery.2-r6_aarch64_cortex-a53.ipk
+Size: 12441766
+SHA256sum: 4ecf39f8d1ce8425fa8e5c24eede8d6d01c4a41672a0ae6c758cd6b03f080b44
+
+Package: v2raya
+Version: 2.5.7-recovery.2-r6
+Architecture: aarch64_cortex-a53
+License: AGPL-3.0-only
+Source: https://github.com/v2rayA/v2rayA
+Maintainer: v2rayA contributors
+Section: net
+Priority: optional
+Depends: libc, ca-bundle, kmod-nft-tproxy, v2raya-core (= 2.5.7-recovery.2-r6), v2ray-geoip, v2ray-geosite
+Installed-Size: 27593909
+Description: Current v2rayA OpenWrt integration
+Filename: v2raya_2.5.7-recovery.2-r6_aarch64_cortex-a53.ipk
+Size: 10122938
+SHA256sum: 1406edd249677beb29f2d598832804e850efa6a1a3c0e93e90eddba59b0623cf
+
+Package: luci-app-v2raya
+Version: 26.268.0-r6
+Architecture: aarch64_cortex-a53
+License: Apache-2.0
+Source: https://github.com/v2rayA/v2raya-openwrt
+Maintainer: v2rayA contributors
+Section: net
+Priority: optional
+Depends: luci-light, v2raya (= 2.5.7-recovery.2-r6)
+Installed-Size: 5475
+Description: Current v2rayA OpenWrt integration
+Filename: luci-app-v2raya_26.268.0-r6_aarch64_cortex-a53.ipk
+Size: 3071
+SHA256sum: 8302358063436e78666b1a6ad8eb0a96d035f9409084f94c5ded0e4c80461588

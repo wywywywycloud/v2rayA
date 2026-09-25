@@ -22,3 +22,22 @@ Application package SHA-256: `bbc005d31b5837a601356ed231881ac491f8ef055a2b7bf123
 The application is AGPL-3.0-only. Upstream dependencies retain their own licenses. The signing private key is never included in this branch.
 
 Validated bundle: `2.2.7.3-r4.failover3.feed1`. See [validation results](https://github.com/wywywywycloud/v2rayA/blob/fix/openwrt-subscription-failover/install/openwrt/feed/VALIDATION.md).
+
+## Current-source release: 2.5.7-recovery.2
+
+The original 2.2.x feed above remains available. The separate current-source
+feed is `openwrt-24.10/current/aarch64_cortex-a53`. It contains v2rayA, its
+matching `v2raya-core` and current LuCI sources, tested on OpenWrt 24.10.4.
+Use `install-current-feed.sh`; it preserves settings, verifies the signing key
+and index, replaces the old feed entry and removes only the old version-pinning
+`v2raya-fork` metapackage when present. It installs `luci-app-v2raya`, which pulls
+in the matching application, core and official dependencies.
+
+Service/core source: https://github.com/wywywywycloud/v2rayA/tree/b3c6789330daf3c25f4aaa5464ad2385a7e3c35a
+
+Package pipeline/LuCI source: https://github.com/wywywywycloud/v2raya-openwrt-current/tree/dca1f5c2172ec6c303418c68cc95e020aff4afcc
+
+Validation uses a generic ARM64 virtual machine, not physical Cudy hardware.
+The legacy SDK recipe remains available; the current packages use the documented
+Go 1.26 / Node 24 source-build pipeline. Do not select standalone `xray-core`
+as the executable for this release: current v2rayA requires `v2raya_core`.

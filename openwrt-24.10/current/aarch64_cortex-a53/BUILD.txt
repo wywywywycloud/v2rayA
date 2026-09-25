@@ -1,0 +1,5 @@
+v2rayA source: b3c6789330daf3c25f4aaa5464ad2385a7e3c35a
+OpenWrt integration source: dca1f5c2172ec6c303418c68cc95e020aff4afcc
+Version: 2.5.7-recovery.2
+Go: go version go1.26.0 darwin/arm64
+Node: v24.19.0
