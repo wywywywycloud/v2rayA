@@ -169,7 +169,11 @@ A service started with `sudo` is stopped with `sudo brew services stop v2raya`, 
 <details>
 <summary><strong>OpenWrt</strong></summary>
 
-The [v2raya-openwrt](https://github.com/v2rayA/v2raya-openwrt) feed and the official packages feed currently package 2.2.7.x with a separate `xray-core`, not the release described here. Until they are updated, install the `mips32`, `mips32le`, `arm64` or `x64` release binaries by hand, as in the next section, with the init script of your choice.
+The signed [v2rayA Resilient OpenWrt distribution](https://github.com/wywywywycloud/v2raya-openwrt-current/blob/release/resilient-openwrt-24.10/RESILIENT-INSTALL.md) supports `aarch64_cortex-a53` routers running every final OpenWrt 24.10 release from **24.10.0 through 24.10.8**. All nine releases passed a clean feed installation and service, core, embedded-GUI and LuCI startup test. OpenWrt 24.10.4 and 24.10.5 additionally passed the complete functional, migration, failure-recovery and reboot test suites.
+
+OpenWrt 25.12 is not supported by this distribution. It uses APK packages and requires a separately built and signed native repository. End-of-life OpenWrt series are not listed as supported.
+
+The upstream [v2raya-openwrt](https://github.com/v2rayA/v2raya-openwrt) and official OpenWrt package feeds currently package a separate release line. Follow the Resilient installation document above when installing this branch.
 
 </details>
 
