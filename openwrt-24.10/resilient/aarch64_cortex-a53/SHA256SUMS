@@ -1,5 +1,5 @@
-960628eecf17ad7f77a70360ab15538c776dd26a52709a3f01c5c7082f687b85  ./luci-app-v2raya-resilient_26.268.0-r9.resilient1_aarch64_cortex-a53.ipk
-ac61586e3117e139c86944044e7e82f6faf01f517b38d4cbb7815afb7056c653  ./v2raya-resilient-core_2.5.7-resilient.3-r9.resilient1_aarch64_cortex-a53.ipk
-ac023008b726145e2cf639060c473b54a7f963dbbe14abafa4a16c0260e9e10b  ./v2raya-resilient_2.5.7-resilient.3-r9.resilient1_aarch64_cortex-a53.ipk
-a197fd3de0df67dc80dd8aa34d8104ed76b635b48a491f0bee03744528ec7b4d  Packages
-1b4e80024dc52b169dc422d6452564456866c5a4a124223c88b470c8603f0703  Packages.gz
+cd781941e0ad5396ec4527dbfc7d5f52046855825333a992a0a0e31fbdb9bd1c  ./luci-app-v2raya-resilient_26.268.0-r10.resilient1_aarch64_cortex-a53.ipk
+61e6f91aeb68663ee81db3a3cdfe09787be0b0e946c2f08bd819d911c78d4e6a  ./v2raya-resilient-core_2.5.7-resilient.4-r10.resilient1_aarch64_cortex-a53.ipk
+5e4e6ccc0c32261e936c5aa6dba77f821285b47ede10d8fec2b85016deecb325  ./v2raya-resilient_2.5.7-resilient.4-r10.resilient1_aarch64_cortex-a53.ipk
+29f886360a397cf688c7fb9cf6baa20eb7e317670482db98e6892ceee20d6140  Packages
+a97bff2568bf86c09152f16f8dd2f9000959baaa2728705a568b1d64f4c5d5da  Packages.gz
