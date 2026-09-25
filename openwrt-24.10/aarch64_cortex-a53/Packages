@@ -1,0 +1,35 @@
+Package: v2raya-fork
+Version: 2.2.7.3-r4.failover3
+Architecture: aarch64_cortex-a53
+Depends: v2raya (= 2.2.7.3-r4.failover3), xray-core (= 25.1.30-r1), v2ray-geoip, v2ray-geosite, luci-light, luci-app-v2raya
+Section: net
+License: AGPL-3.0-only
+Maintainer: Mikhail Levin
+Source: https://github.com/wywywywycloud/v2rayA/tree/fix/openwrt-subscription-failover
+Installed-Size: 1024
+Filename: v2raya-fork_2.2.7.3-r4.failover3_aarch64_cortex-a53.ipk
+Size: 801
+SHA256sum: ef69adacdd109f77f008c0dc6d20f323396fefa4507cbf30c3d4ab37ee679dc3
+Description: Tested v2rayA fork with Xray, geodata and LuCI interface
+ Installs the tested application, embedded web UI and official dependencies.
+
+Package: v2raya
+Version: 2.2.7.3-r4.failover3
+Depends: libc, ca-bundle, kmod-nft-tproxy, xray-core
+Source: https://github.com/wywywywycloud/v2rayA/tree/fix/openwrt-subscription-failover
+SourceName: v2rayA
+License: AGPL-3.0-only
+LicenseFiles: LICENSE
+Section: net
+SourceDateEpoch: 1790168649
+URL: https://github.com/wywywywycloud/v2rayA
+Maintainer: Mikhail Levin
+Architecture: aarch64_cortex-a53
+Installed-Size: 26548224
+Filename: v2raya_2.2.7.3-r4.failover3_aarch64_cortex-a53.ipk
+Size: 11209345
+SHA256sum: bbc005d31b5837a601356ed231881ac491f8ef055a2b7bf123d21c31665d4031
+Description:  v2rayA is a V2Ray Linux client supporting global transparent proxy,
+ compatible with SS, SSR, Trojan(trojan-go), PingTunnel protocols.
+ Local build: probe subscription servers and recover monitored connections.
+
