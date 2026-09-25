@@ -10,6 +10,10 @@ The custom package is named `v2raya_2.2.7.3-r4.failover3_aarch64_cortex-a53.ipk`
 It updates the v2rayA service; keep the existing `luci-app-v2raya` package.
 This is a fork build, not an official OpenWrt release.
 
+## Install through opkg
+
+The recommended installation method is the [signed feed installer](feed/README.md). It installs this fork, Xray, geodata and both the embedded GUI and LuCI service page in one operation. The manual IPK method below remains available.
+
 ## Install on the router
 
 Replace `ROUTER` with the router's address. Keep a copy of the existing settings on your computer:
