@@ -50,8 +50,18 @@ blackhole probe tests passed on Linux.
 The package index is signed using the existing Resilient key
 `9f02e659f24749fa`. Exact service/core dependencies prevent mismatched pairs.
 The three package payloads were built from the source revisions above.
-The prior r8 signed-feed installation through LuCI is already verified;
-the r8-to-r9 public-feed upgrade is being verified before release handoff.
+Public-feed r8-to-r9 upgrade passed through LuCI System > Software:
+- Update lists verified the Resilient signature.
+- Upgrading only `luci-app-v2raya-resilient` pulled the exact service/core pair.
+- Force-overwrite remained unchecked; all three packages show Installed at r9.
+- UCI configuration remained byte-for-byte identical, SHA256
+  `3d41e77675922cb491edf5e30243c9afbbfd32d6c178f47e33c6114ac4f46a15`.
+  opkg preserved the modified file and placed its template at `v2raya-opkg`.
+- The existing test account, two subscriptions and saved 0/1-minute timers
+  survived. Service/core report `2.5.7-resilient.3` and `coreVersionValid=true`.
+- Installed service/core SHA256 hashes exactly match the binaries used in
+  the 12-scenario run. The VM had r8 package metadata with the candidate
+  binaries temporarily copied in for integration testing before this upgrade.
 
 ## Scope
 
