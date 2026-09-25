@@ -35,6 +35,9 @@ printf 'src/gz v2raya_fork %s\n' "$feed_url" >> "$work_dir/customfeeds.conf"
 cat "$work_dir/customfeeds.conf" > /etc/opkg/customfeeds.conf
 opkg update
 opkg install v2raya-fork
+[ -x /usr/bin/v2raya ] && [ -x /usr/bin/xray ] && [ -s /usr/share/v2raya-fork/README ] || {
+    echo 'The package installation did not complete; inspect the opkg output above.' >&2; exit 1;
+}
 uci set v2raya.config.enabled='1'
 uci commit v2raya
 /etc/init.d/v2raya enable

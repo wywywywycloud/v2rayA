@@ -1,5 +1,5 @@
 Package: v2raya-fork
-Version: 2.2.7.3-r4.failover3
+Version: 2.2.7.3-r4.failover3.feed1
 Architecture: aarch64_cortex-a53
 Depends: v2raya (= 2.2.7.3-r4.failover3), xray-core (= 25.1.30-r1), v2ray-geoip, v2ray-geosite, luci-light, luci-app-v2raya
 Section: net
@@ -7,9 +7,9 @@ License: AGPL-3.0-only
 Maintainer: Mikhail Levin
 Source: https://github.com/wywywywycloud/v2rayA/tree/fix/openwrt-subscription-failover
 Installed-Size: 1024
-Filename: v2raya-fork_2.2.7.3-r4.failover3_aarch64_cortex-a53.ipk
-Size: 801
-SHA256sum: ef69adacdd109f77f008c0dc6d20f323396fefa4507cbf30c3d4ab37ee679dc3
+Filename: v2raya-fork_2.2.7.3-r4.failover3.feed1_aarch64_cortex-a53.ipk
+Size: 850
+SHA256sum: 3575619bfb7c815c239e43812923417989361684182199e72c5b7a8d12c54a7f
 Description: Tested v2rayA fork with Xray, geodata and LuCI interface
  Installs the tested application, embedded web UI and official dependencies.
 
