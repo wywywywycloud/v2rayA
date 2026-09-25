@@ -1,5 +1,5 @@
 Package: v2raya-resilient-core
-Version: 2.5.7-recovery.2-r8.resilient1
+Version: 2.5.7-resilient.3-r9.resilient1
 Architecture: aarch64_cortex-a53
 Provides: v2raya-core, v2raya-levin-core
 Conflicts: v2raya-core, v2raya-levin-core
@@ -12,12 +12,12 @@ Priority: optional
 Depends: libc
 Installed-Size: 35192994
 Description: Matching proxy core for v2rayA Resilient
-Filename: v2raya-resilient-core_2.5.7-recovery.2-r8.resilient1_aarch64_cortex-a53.ipk
-Size: 12441918
-SHA256sum: 56fcdaba3043e47ea42481fbe9451d380fb9535c31642c5b7d8ca471e5b1fd0d
+Filename: v2raya-resilient-core_2.5.7-resilient.3-r9.resilient1_aarch64_cortex-a53.ipk
+Size: 12441928
+SHA256sum: ac61586e3117e139c86944044e7e82f6faf01f517b38d4cbb7815afb7056c653
 
 Package: v2raya-resilient
-Version: 2.5.7-recovery.2-r8.resilient1
+Version: 2.5.7-resilient.3-r9.resilient1
 Architecture: aarch64_cortex-a53
 Provides: v2raya, v2raya-levin
 Conflicts: v2raya, v2raya-levin
@@ -27,15 +27,15 @@ Source: https://github.com/wywywywycloud/v2rayA-current/tree/release/resilient-o
 Maintainer: wywywywycloud
 Section: net
 Priority: optional
-Depends: libc, ca-bundle, kmod-nft-tproxy, v2raya-resilient-core (= 2.5.7-recovery.2-r8.resilient1), v2ray-geoip, v2ray-geosite
-Installed-Size: 27593909
-Description: Resilient fork of v2rayA: subscription recovery and first-server policy
-Filename: v2raya-resilient_2.5.7-recovery.2-r8.resilient1_aarch64_cortex-a53.ipk
-Size: 10123199
-SHA256sum: 0b8b4f4ad19bdd6f9dbff89682bc7c7e49e776fbb333b25c9b1918bd0125869c
+Depends: libc, ca-bundle, kmod-nft-tproxy, v2raya-resilient-core (= 2.5.7-resilient.3-r9.resilient1), v2ray-geoip, v2ray-geosite
+Installed-Size: 27528373
+Description: Resilient fork of v2rayA: automatic healthy proxy groups and subscription update timers
+Filename: v2raya-resilient_2.5.7-resilient.3-r9.resilient1_aarch64_cortex-a53.ipk
+Size: 10125063
+SHA256sum: ac023008b726145e2cf639060c473b54a7f963dbbe14abafa4a16c0260e9e10b
 
 Package: luci-app-v2raya-resilient
-Version: 26.268.0-r8.resilient1
+Version: 26.268.0-r9.resilient1
 Architecture: aarch64_cortex-a53
 Provides: luci-app-v2raya, luci-app-v2raya-levin
 Conflicts: luci-app-v2raya, luci-app-v2raya-levin
@@ -45,10 +45,10 @@ Source: https://github.com/wywywywycloud/v2raya-openwrt-current/tree/release/res
 Maintainer: wywywywycloud
 Section: net
 Priority: optional
-Depends: luci-light, v2raya-resilient (= 2.5.7-recovery.2-r8.resilient1)
+Depends: luci-light, v2raya-resilient (= 2.5.7-resilient.3-r9.resilient1)
 Installed-Size: 5515
 Description: v2rayA Resilient - install this package for the complete fork with LuCI
-Filename: luci-app-v2raya-resilient_26.268.0-r8.resilient1_aarch64_cortex-a53.ipk
-Size: 3256
-SHA256sum: 285f0f33822bd84cebf17d9eab151463643ac96f6057b46be6a36d94385cbfeb
+Filename: luci-app-v2raya-resilient_26.268.0-r9.resilient1_aarch64_cortex-a53.ipk
+Size: 3254
+SHA256sum: 960628eecf17ad7f77a70360ab15538c776dd26a52709a3f01c5c7082f687b85
 
