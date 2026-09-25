@@ -16,6 +16,8 @@ import (
 // ConfigurationMu serializes scheduled updates with API operations that change the core or database.
 var ConfigurationMu sync.Mutex
 
+var ErrNoReachableSubscriptionServer = errors.New("no reachable server")
+
 type subscriptionProbeResult struct {
 	latency time.Duration
 	err     error
@@ -37,6 +39,10 @@ func subscriptionOwnsProxy(index int) bool {
 }
 
 func updateSubscriptionWithProbe(index int, old *configure.SubscriptionRaw, servers []serverObj.ServerObj, info string, probe subscriptionProber) error {
+	return applySubscriptionSelection(index, old, servers, info, probe, false)
+}
+
+func applySubscriptionSelection(index int, old *configure.SubscriptionRaw, servers []serverObj.ServerObj, info string, probe subscriptionProber, restart bool) error {
 	probeURL := configure.GetOutboundSetting("proxy").ProbeURL
 	if probeURL == "" {
 		probeURL = HttpTestURL
@@ -61,7 +67,7 @@ func updateSubscriptionWithProbe(index int, old *configure.SubscriptionRaw, serv
 		}
 	}
 	if best < 0 {
-		return fmt.Errorf("no reachable server in subscription %d; previous configuration kept", index+1)
+		return fmt.Errorf("%w in subscription %d; previous configuration kept", ErrNoReachableSubscriptionServer, index+1)
 	}
 	previous := configure.GetConnectedServers()
 	updated := configure.NewWhiches(nil)
@@ -96,15 +102,18 @@ func updateSubscriptionWithProbe(index int, old *configure.SubscriptionRaw, serv
 	updated.Add(configure.Which{TYPE: configure.SubscriptionServerType, Sub: index, ID: best + 1, Outbound: "proxy"})
 	next.Status = string(touch.NewUpdateStatus())
 	next.Info = info
-	wasRunning := v2ray.ProcessManager.Running()
+	wasRunning := v2ray.ProcessManager.Running() || (restart && configure.GetRunning())
 	if err := configure.SetSubscriptionAndConnects(index, &next, updated); err != nil {
 		return err
 	}
-	if wasRunning && !unchanged {
+	if wasRunning && (!unchanged || restart) {
 		if err := v2ray.UpdateV2RayConfig(); err != nil {
 			restoreErr := configure.SetSubscriptionAndConnects(index, old, previous)
 			if restoreErr == nil {
 				restoreErr = v2ray.UpdateV2RayConfig()
+			}
+			if restart && restoreErr != nil {
+				_ = configure.SetRunning(true)
 			}
 			return errors.Join(fmt.Errorf("failed to apply selected server: %w", err), restoreErr)
 		}

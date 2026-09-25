@@ -69,7 +69,7 @@ python3 tests/openwrt_vm_e2e.py --disposable-vm \
 
 The baseline check expects the original defect: automatic refresh selects the dead first node and traffic fails even though later nodes work.
 
-Restore a clean guest snapshot or stop the service and archive its disposable test database. Ensure no Xray process from the previous test remains before restarting. Install the candidate package. The VM uses `aarch64_generic`; the physical-router package uses `aarch64_cortex-a53`. Both can run this static baseline-ARM64 executable. In this isolated VM only, a compatible opkg architecture list can contain:
+Restore a clean guest snapshot or stop the service and archive its disposable test database. Wait for both the v2rayA process and its Xray process to exit before moving the database or restarting: the init script can return before termination is complete. Install the candidate package. The VM uses `aarch64_generic`; the physical-router package uses `aarch64_cortex-a53`. Both can run this static baseline-ARM64 executable. In this isolated VM only, a compatible opkg architecture list can contain:
 
 ```text
 arch all 1
@@ -115,3 +115,16 @@ This fires the actual scheduler's ticker with a short test-only duration and rea
 ## Limits
 
 The VM exercises the same OpenWrt release and ARM64 application binary, but does not emulate the Cudy SoC, Wi-Fi, flash layout or physical LAN. The transparent traffic check originates on the guest; it does not represent a separate LAN client's forwarding path. The test endpoints use plain VLESS over TCP on an isolated local network. Provider-specific TLS/REALITY, external plugins and real subscription credentials need separate validation.
+
+## Exercise production monitoring intervals
+
+Reset the disposable v2rayA database after the refresh suite and run:
+
+```sh
+python3 tests/subscription_monitor_e2e.py --disposable-vm \
+  --xray /absolute/path/to/host/xray \
+  --ssh-key /absolute/path/to/disposable/key \
+  --output /tmp/openwrt-monitor
+```
+
+This test disables the ordinary update schedule and leaves Auto Select off. It checks the default-off monitoring setting, healthy traffic with one core and no subscription downloads, a transient outage, an actual sustained outage exceeding one minute, real VLESS and TPROXY recovery, immediate retries when all nodes fail, recovery after a node returns, cancellation during a blocked subscription download, switch-off behavior, manual stop and persistence across an OpenWrt service restart. The production timer is not shortened. Use a fresh test database for each invocation.

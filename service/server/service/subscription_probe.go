@@ -24,6 +24,10 @@ import (
 const subscriptionProbeTimeout = 5 * time.Second
 
 func probeSubscription(servers []serverObj.ServerObj, probeURL string) []subscriptionProbeResult {
+	return probeSubscriptionWithContext(context.Background(), servers, probeURL)
+}
+
+func probeSubscriptionWithContext(ctx context.Context, servers []serverObj.ServerObj, probeURL string) []subscriptionProbeResult {
 	results := make([]subscriptionProbeResult, len(servers))
 	// Limit extra core processes on routers; still wait for the entire subscription.
 	jobs := make(chan int)
@@ -33,7 +37,7 @@ func probeSubscription(servers []serverObj.ServerObj, probeURL string) []subscri
 		go func() {
 			defer wg.Done()
 			for i := range jobs {
-				results[i].latency, results[i].err = probeSubscriptionServer(servers[i], probeURL, subscriptionProbeTimeout)
+				results[i].latency, results[i].err = probeSubscriptionServerWithContext(ctx, servers[i], probeURL, subscriptionProbeTimeout)
 			}
 		}()
 	}
@@ -46,6 +50,13 @@ func probeSubscription(servers []serverObj.ServerObj, probeURL string) []subscri
 }
 
 func probeSubscriptionServer(server serverObj.ServerObj, probeURL string, timeout time.Duration) (time.Duration, error) {
+	return probeSubscriptionServerWithContext(context.Background(), server, probeURL, timeout)
+}
+
+func probeSubscriptionServerWithContext(parent context.Context, server serverObj.ServerObj, probeURL string, timeout time.Duration) (time.Duration, error) {
+	if err := parent.Err(); err != nil {
+		return 0, err
+	}
 	u, err := url.Parse(probeURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
 		return 0, fmt.Errorf("invalid HTTP probe URL")
@@ -90,7 +101,7 @@ func probeSubscriptionServer(server serverObj.ServerObj, probeURL string, timeou
 	if startupTimeout <= 0 {
 		startupTimeout = 15 * time.Second
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), startupTimeout+timeout)
+	ctx, cancel := context.WithTimeout(parent, startupTimeout+timeout)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, bin, "run", "--config="+file.Name())
 	cmd.Env = append(os.Environ(), "XRAY_LOCATION_ASSET="+asset.GetV2rayLocationAssetOverride(), "V2RAY_CONF_GEOLOADER=memconservative")

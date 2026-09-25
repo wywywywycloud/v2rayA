@@ -168,6 +168,7 @@ func Run() error {
 			if ctx.Request.Method == http.MethodGet && ctx.FullPath() != "/api/httpLatency" && ctx.FullPath() != "/api/pingLatency" {
 				return
 			}
+			service.CancelSubscriptionRecovery()
 			if !service.ConfigurationMu.TryLock() {
 				common.ResponseError(ctx, fmt.Errorf("the last request is being processed"))
 				ctx.Abort()

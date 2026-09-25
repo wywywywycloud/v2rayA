@@ -50,7 +50,7 @@ def main():
     if "Package: v2raya\n" not in text or "Architecture: aarch64_cortex-a53\n" not in text:
         raise ValueError("unexpected base package")
     updates = {
-        "Version": "2.2.7.3-r2.failover1",
+        "Version": "2.2.7.3-r3.failover2",
         "Source": "https://github.com/wywywywycloud/v2rayA/tree/fix/openwrt-subscription-failover",
         "Maintainer": "Mikhail Levin",
         "URL": "https://github.com/wywywywycloud/v2rayA",
@@ -58,7 +58,7 @@ def main():
     }
     for key, value in updates.items():
         text = re.sub(r"^" + re.escape(key) + r": .*?$", key + ": " + value, text, flags=re.M)
-    text += " Local build: probe subscription servers before Xray auto-selection.\n"
+    text += " Local build: probe subscription servers and recover monitored connections.\n"
     controls = repack(controls, {"./control": text.encode()})
     result = repack(data, {"./data.tar.gz": payload, "./control.tar.gz": controls})
     args.output.parent.mkdir(parents=True, exist_ok=True)

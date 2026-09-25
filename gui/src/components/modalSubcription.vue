@@ -23,6 +23,12 @@
 	  >{{ $t("subscription.autoSelect") }}
 	</b-checkbox>
       </b-field>
+      <b-field label="MONITORING">
+        <b-switch v-model="which.monitor">
+          {{ $t("subscription.monitor") }}
+        </b-switch>
+      </b-field>
+      <p class="help">{{ $t("subscription.monitorHelp") }}</p>
     </section>
     <footer class="modal-card-foot flex-end">
       <button class="button" type="button" @click="$parent.close()">

@@ -61,6 +61,8 @@ export default {
     numberServers: "Number of Servers",
     subscription: "Subscription",
     autoSelect: "Automatically connect to new servers from the subscription after an automatic update of the subscription",
+    monitor: "Recover failed connections automatically",
+    monitorHelp: "After the active connection fails for one minute, refresh this subscription and find a working server. Keep retrying if none works. Manual disconnects are respected.",
   },
   operations: {
     name: "Operations",

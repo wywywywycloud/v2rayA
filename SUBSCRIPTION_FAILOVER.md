@@ -14,13 +14,23 @@ Enable **Auto Select** in the subscription's **Modify** dialog. Set automatic su
 4. Save the updated subscription and all remapped connection references in a single database transaction. Restart the active core only when the chosen server changes.
 5. If downloading fails, the new list is empty, or all candidates fail, keep the previous subscription and connection. Return an error to manual updates and log errors from scheduled updates. If applying a selection fails, restore the previous database state and restart the previous core; report restoration failures too.
 
-The active subscription owns the `proxy` outbound. Other subscriptions cannot take it over. If nothing is selected, the first subscription with Auto Select enabled owns the initial selection. A manually selected standalone server is retained. Other outbounds retain their existing endpoints, including nodes removed from the refreshed subscription. Disabling Auto Select retains the original manual selection behavior. The V2Ray multi-server selection path is unchanged.
+The active subscription owns the `proxy` outbound. Other subscriptions cannot take it over. If nothing is selected, the first subscription with Auto Select enabled owns the initial selection. A manually selected standalone server is retained. Other outbounds retain their existing endpoints, including nodes removed from the refreshed subscription. When both Auto Select and monitoring are disabled, refresh retains the original manual selection behavior. The V2Ray multi-server selection path is unchanged.
 
 Subscription downloads retain their existing direct retry after a transport failure, with a timeout on both attempts. A shared HTTP client is never modified. Core shutdown now waits for the child process to finish, so a service restart cannot leave the previous core holding the proxy ports.
 
 The probe URL is the existing `proxy` outbound's `probeURL`, defaulting to `https://gstatic.com/generate_204`. A reachable TCP port alone does not qualify a server. The probe listener binds to loopback; the generated outbound retains v2rayA's transparent-proxy bypass mark when transparent proxying is enabled. The active core is left running during probes. Concurrent API mutations are rejected as busy while the scheduler holds the shared configuration lock.
 
-This implements failover **at subscription refresh**, not continuous monitoring between updates. External-plugin nodes are excluded from isolated probing. The interval still uses the existing whole-hour setting. Native protocols use the existing v2rayA configuration generator.
+Auto Select implements failover **at subscription refresh**. Optional monitoring also detects failures between updates, as described below. External-plugin nodes are excluded from isolated probing. The interval still uses the existing whole-hour setting. Native protocols use the existing v2rayA configuration generator.
+
+## Optional connection monitoring
+
+In the subscription's **Modify** dialog, enable **Recover failed connections automatically**. This switch defaults to off and is saved per subscription. It works independently of Auto Select and the hourly update schedule. Monitoring only follows the currently connected subscription; it does not connect an idle subscription or undo a manual disconnect.
+
+One worker checks the active tunnel every ten seconds using the configured HTTP probe URL and a five-second request timeout. It uses a private loopback HTTP inbound in the existing Xray process, even when public proxy ports are disabled. Healthy monitoring creates no additional core processes and does not download the subscription or scan every node. A successful check clears the outage timer. After at least one minute of continuously failed observations, recovery downloads the subscription and probes all candidates, with at most two temporary cores at a time. Sampling and request timeouts mean recovery begins after the one-minute threshold rather than exactly sixty seconds after the physical outage.
+
+If no candidate works, recovery refreshes again immediately once, then waits 5, 10, 20 and at most 30 seconds between subsequent attempts. These waits follow completed attempts; network and probe time is additional. It never waits for the ordinary hourly schedule. This bounded retry prevents a tight loop against an unavailable provider. A manual or scheduled refresh that finds no working candidate also wakes recovery immediately. A failed or empty download leaves the saved list intact and recovery checks its cached candidates.
+
+Background download and probing release the configuration lock. Changing settings, selecting a server, manually stopping, or disabling monitoring cancels the job. The final commit rechecks the selected connection, running core and subscription snapshot so stale results cannot overwrite a user change. A shared scan lock prevents overlapping candidate scans. Applying a recovered candidate restarts the core even if the endpoint is unchanged, allowing recovery of a failed local core. Shutdown cancels and joins the single monitoring worker.
 
 ## Root cause in the base release
 
@@ -30,7 +40,16 @@ The OpenWrt VM exposed an additional lifecycle failure: stopping the service can
 
 ## Reproduce the validation
 
-Use Go 1.23.12 and the official 2.2.7.3 `web.tar.gz` extracted into `service/server/router/web`. Xray is a separate executable. From `service/`:
+Use Go 1.23.12 and Yarn 1.22.22. Build the GUI from this branch so the monitoring switch is included (do not use the upstream prebuilt GUI):
+
+```sh
+cd gui
+yarn install --frozen-lockfile --ignore-engines
+OUTPUT_DIR=../service/server/router/web yarn build
+cd ..
+```
+
+Xray is a separate executable. After the GUI build completes, from `service/`:
 
 ```sh
 CGO_ENABLED=0 go build -trimpath -o /tmp/v2raya .
@@ -54,13 +73,13 @@ For real OpenWrt service, VLESS and nftables/TPROXY checks, follow [tests/OPENWR
 ```sh
 cd service
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath \
-  -ldflags '-s -w -X github.com/v2rayA/v2rayA/conf.Version=2.2.7.3-failover.1' \
+  -ldflags '-s -w -X github.com/v2rayA/v2rayA/conf.Version=2.2.7.3-failover.2' \
   -o /tmp/v2raya-linux-arm64 .
 cd ..
 python3 install/openwrt/repack.py --base /path/to/official-v2raya.ipk \
   --sha256 CHECKSUM_FROM_CURRENT_OFFICIAL_PACKAGES_INDEX \
   --binary /tmp/v2raya-linux-arm64 \
-  --output /tmp/v2raya_2.2.7.3-r2.failover1_aarch64_cortex-a53.ipk
+  --output /tmp/v2raya_2.2.7.3-r3.failover2_aarch64_cortex-a53.ipk
 ```
 
 The repacker retains the official package's init script, configuration file, upgrade retention list, conffiles, dependencies and installation/removal scripts. It replaces the executable and identifies the result as a local fork build. This is an unsigned custom package, not an official OpenWrt release.

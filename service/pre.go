@@ -364,6 +364,7 @@ func run() (err error) {
 	}
 	// Start scheduled work after restoring the core, so startup cannot race a subscription update.
 	checkUpdate()
+	stopMonitor := service.StartSubscriptionMonitor()
 	//w := configure.GetConnectedServers()
 	//log.Println(err, ", which:", w)
 	//_ = configure.ClearConnected()
@@ -383,6 +384,7 @@ func run() (err error) {
 		log.Fatal("run: %v", err)
 	}
 	fmt.Println("Quitting...")
+	stopMonitor()
 	v2ray.ProcessManager.CheckAndStopTransparentProxy(nil)
 	v2ray.ProcessManager.Stop(false)
 	_ = db.DB().Close()
