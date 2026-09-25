@@ -1,0 +1,54 @@
+Package: v2raya-levin-core
+Version: 2.5.7-recovery.2-r7.levin1
+Architecture: aarch64_cortex-a53
+Provides: v2raya-core
+Conflicts: v2raya-core
+Replaces: v2raya-core
+License: MPL-2.0
+Source: https://github.com/wywywywycloud/v2rayA-current/tree/release/levin-openwrt-24.10
+Maintainer: Mikhail Levin
+Section: net
+Priority: optional
+Depends: libc
+Installed-Size: 35192994
+Description: Matching proxy core for v2rayA Levin
+Filename: v2raya-levin-core_2.5.7-recovery.2-r7.levin1_aarch64_cortex-a53.ipk
+Size: 12441890
+SHA256sum: 668c2424b676908d3b42f3303f9e83a993becc69cffa04f46d3ea2398f4982c0
+
+Package: v2raya-levin
+Version: 2.5.7-recovery.2-r7.levin1
+Architecture: aarch64_cortex-a53
+Provides: v2raya
+Conflicts: v2raya
+Replaces: v2raya
+License: AGPL-3.0-only
+Source: https://github.com/wywywywycloud/v2rayA-current/tree/release/levin-openwrt-24.10
+Maintainer: Mikhail Levin
+Section: net
+Priority: optional
+Depends: libc, ca-bundle, kmod-nft-tproxy, v2raya-levin-core (= 2.5.7-recovery.2-r7.levin1), v2ray-geoip, v2ray-geosite
+Installed-Size: 27593909
+Description: Levin fork of v2rayA: subscription recovery and first-server policy
+Filename: v2raya-levin_2.5.7-recovery.2-r7.levin1_aarch64_cortex-a53.ipk
+Size: 10123098
+SHA256sum: 5289b77763b0dddaaff88af6f911ab6883bbc3645e77bcb9f8b67a85b95cdc8b
+
+Package: luci-app-v2raya-levin
+Version: 26.268.0-r7.levin1
+Architecture: aarch64_cortex-a53
+Provides: luci-app-v2raya
+Conflicts: luci-app-v2raya
+Replaces: luci-app-v2raya
+License: Apache-2.0
+Source: https://github.com/wywywywycloud/v2raya-openwrt-current/tree/release/levin-openwrt-24.10
+Maintainer: Mikhail Levin
+Section: net
+Priority: optional
+Depends: luci-light, v2raya-levin (= 2.5.7-recovery.2-r7.levin1)
+Installed-Size: 5499
+Description: v2rayA Levin - install this package for the complete fork with LuCI
+Filename: luci-app-v2raya-levin_26.268.0-r7.levin1_aarch64_cortex-a53.ipk
+Size: 3250
+SHA256sum: f688eb52b36cab2406d6399afb49e6df1646b1611eafd43e89f07654265d6a89
+
