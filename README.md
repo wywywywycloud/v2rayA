@@ -20,3 +20,5 @@ Application commit: `c39977ab7061c6b87b6b8c025f733d141fb3c47e`.
 Application package SHA-256: `bbc005d31b5837a601356ed231881ac491f8ef055a2b7bf123d21c31665d4031`.
 
 The application is AGPL-3.0-only. Upstream dependencies retain their own licenses. The signing private key is never included in this branch.
+
+Validated bundle: `2.2.7.3-r4.failover3.feed1`. See [validation results](https://github.com/wywywywycloud/v2rayA/blob/fix/openwrt-subscription-failover/install/openwrt/feed/VALIDATION.md).
